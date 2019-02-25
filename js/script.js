@@ -1,8 +1,30 @@
-ready(function(){
-
+ready(function() {
   // В этом месте должен быть написан ваш код
 
-
+  // Вывод карточек с книгами
+  const cardTemplate = document.querySelector('#card-template');
+  const fragment = document.createDocumentFragment();
+  const catalogBooksList = document.querySelector('.catalog__books-list');
+  for (let i = 0; i < 10; i++) {
+    const cardTemplateFragment = cardTemplate.content.cloneNode(true);
+    cardTemplateFragment.querySelector('.card__title').textContent =
+      books[i].name;
+    const cardPrice = cardTemplateFragment.querySelector('.card__price');
+    const cardInner = cardTemplateFragment.querySelector('.card__inner');
+    cardPrice.textContent = `${books[i].price} ₽`;
+    cardInner.href = `index.html#${books[i].uri}`;
+    cardTemplateFragment.querySelector('.card__img').src = `img/${
+      books[i].uri
+    }.jpg`;
+    if (books[i].new) {
+      const newLabel = document.createElement('span');
+      newLabel.classList.add('card__new');
+      newLabel.textContent = 'new';
+      cardInner.insertBefore(newLabel, cardPrice);
+    }
+    fragment.appendChild(cardTemplateFragment);
+  }
+  catalogBooksList.appendChild(fragment);
 
   // ВНИМАНИЕ!
   // Нижеследующий код (кастомный селект и выбор диапазона цены) работает
@@ -13,34 +35,49 @@ ready(function(){
   // Кастомные селекты (кроме выбора языка)
   new Choices('.field-select:not(#lang) select.field-select__select', {
     searchEnabled: false,
-    shouldSort: false,
+    shouldSort: false
   });
   // Кастомный селект выбора языка отдельно
   new Choices('#lang select.field-select__select', {
     searchEnabled: false,
     shouldSort: false,
-    callbackOnCreateTemplates: function (template) {
+    callbackOnCreateTemplates: function(template) {
       return {
         item: (classNames, data) => {
           return template(`
-            <div class="${classNames.item} ${data.highlighted ? classNames.highlightedState : classNames.itemSelectable}" data-item data-id="${data.id}" data-value="${data.value}" ${data.active ? 'aria-selected="true"' : ''} ${data.disabled ? 'aria-disabled="true"' : ''}>
-              ${getLangInSelectIcon(data.value)} ${data.label.substr(0,3)}
+            <div class="${classNames.item} ${
+            data.highlighted
+              ? classNames.highlightedState
+              : classNames.itemSelectable
+          }" data-item data-id="${data.id}" data-value="${data.value}" ${
+            data.active ? 'aria-selected="true"' : ''
+          } ${data.disabled ? 'aria-disabled="true"' : ''}>
+              ${getLangInSelectIcon(data.value)} ${data.label.substr(0, 3)}
             </div>
           `);
         },
         choice: (classNames, data) => {
           return template(`
-            <div class="${classNames.item} ${classNames.itemChoice} ${data.disabled ? classNames.itemDisabled : classNames.itemSelectable}" data-select-text="${this.config.itemSelectText}" data-choice ${data.disabled ? 'data-choice-disabled aria-disabled="true"' : 'data-choice-selectable'} data-id="${data.id}" data-value="${data.value}" ${data.groupId > 0 ? 'role="treeitem"' : 'role="option"'}>
+            <div class="${classNames.item} ${classNames.itemChoice} ${
+            data.disabled ? classNames.itemDisabled : classNames.itemSelectable
+          }" data-select-text="${this.config.itemSelectText}" data-choice ${
+            data.disabled
+              ? 'data-choice-disabled aria-disabled="true"'
+              : 'data-choice-selectable'
+          } data-id="${data.id}" data-value="${data.value}" ${
+            data.groupId > 0 ? 'role="treeitem"' : 'role="option"'
+          }>
               ${getLangInSelectIcon(data.value)} ${data.label}
             </div>
           `);
-        },
+        }
       };
     }
   });
   function getLangInSelectIcon(value) {
     if (value == 'ru') return '<span class="field-select__lang-ru"></span>';
-    else if (value == 'en') return '<span class="field-select__lang-en"></span>';
+    else if (value == 'en')
+      return '<span class="field-select__lang-en"></span>';
     return '<span class="field-select__lang-null"></span>';
   }
 
@@ -51,15 +88,18 @@ ready(function(){
     connect: true,
     step: 100,
     range: {
-      'min': 200,
-      'max': 2000
+      min: 200,
+      max: 2000
     }
   });
-
 });
 
-function ready (fn) {
-  if (document.attachEvent ? document.readyState === 'complete' : document.readyState !== 'loading'){
+function ready(fn) {
+  if (
+    document.attachEvent
+      ? document.readyState === 'complete'
+      : document.readyState !== 'loading'
+  ) {
     fn();
   } else {
     document.addEventListener('DOMContentLoaded', fn);
