@@ -26,6 +26,14 @@ ready(function() {
   }
   catalogBooksList.appendChild(fragment);
 
+  // Открытие меню по нажатию на бургер
+
+  const mainNavToggler = document.querySelector('.main-nav__toggler');
+  const mainNav = document.querySelector('.main-nav');
+  mainNavToggler.addEventListener('click', () => {
+    mainNav.classList.toggle('main-nav--open');
+  });
+
   // ВНИМАНИЕ!
   // Нижеследующий код (кастомный селект и выбор диапазона цены) работает
   // корректно и не вызывает ошибок в консоли браузера только на главной.
