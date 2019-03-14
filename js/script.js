@@ -1,30 +1,53 @@
 ready(function() {
   // В этом месте должен быть написан ваш код
+  const xhr = new XMLHttpRequest();
+  // xhr.open('GET', 'https://books.marinintim.com/books');
+  // xhr.setRequestHeader('Accept', 'application/json');
+  xhr.open('GET', 'https://api.do-epixx.ru/htmlpro/bookstore/books/get');
+
+  xhr.addEventListener('readystatechange', function() {
+    if (this.readyState != 4) {
+      return;
+    }
+
+    if (this.status != 200) {
+      console.log(xhr.status);
+    } else {
+      const data = JSON.parse(xhr.responseText);
+      console.log(data.items);
+      renderCatalog(data.items);
+    }
+  });
+  xhr.send();
 
   // Вывод карточек с книгами
   const cardTemplate = document.querySelector('#card-template');
   const fragment = document.createDocumentFragment();
   const catalogBooksList = document.querySelector('.catalog__books-list');
-  for (let i = 0; i < 10; i++) {
-    const cardTemplateFragment = cardTemplate.content.cloneNode(true);
-    cardTemplateFragment.querySelector('.card__title').textContent =
-      books[i].name;
-    const cardPrice = cardTemplateFragment.querySelector('.card__price');
-    const cardInner = cardTemplateFragment.querySelector('.card__inner');
-    cardPrice.textContent = `${books[i].price} ₽`;
-    cardInner.href = `index.html#${books[i].uri}`;
-    cardTemplateFragment.querySelector('.card__img').src = `img/${
-      books[i].uri
-    }.jpg`;
-    if (books[i].new) {
-      const newLabel = document.createElement('span');
-      newLabel.classList.add('card__new');
-      newLabel.textContent = 'new';
-      cardInner.insertBefore(newLabel, cardPrice);
+
+  const renderCatalog = arr => {
+    for (let i = 0; i < (arr.length > 10 ? 10 : arr.length); i++) {
+      console.log(arr[i]);
+      const cardTemplateFragment = cardTemplate.content.cloneNode(true);
+      cardTemplateFragment.querySelector('.card__title').textContent =
+        arr[i].name;
+      const cardPrice = cardTemplateFragment.querySelector('.card__price');
+      const cardInner = cardTemplateFragment.querySelector('.card__inner');
+      cardPrice.textContent = `${arr[i].price} ₽`;
+      cardInner.href = `index.html#${arr[i].uri}`;
+      cardTemplateFragment.querySelector('.card__img').src = `img/${
+        arr[i].uri
+      }.jpg`;
+      if (arr[i].new) {
+        const newLabel = document.createElement('span');
+        newLabel.classList.add('card__new');
+        newLabel.textContent = 'new';
+        cardInner.insertBefore(newLabel, cardPrice);
+      }
+      fragment.appendChild(cardTemplateFragment);
     }
-    fragment.appendChild(cardTemplateFragment);
-  }
-  catalogBooksList.appendChild(fragment);
+    catalogBooksList.appendChild(fragment);
+  };
 
   // Открытие меню по нажатию на бургер
 
